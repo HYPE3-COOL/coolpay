@@ -1,0 +1,7 @@
+import { Vertex } from '@agent-graph/core';
+import { PostGenerateTask } from '@/db/schema/ai';
+
+export const reviewer = new Vertex({
+  id: 'reviewer',
+  compute: async (tasks: Readonly<PostGenerateTask[]>) => {},
+});

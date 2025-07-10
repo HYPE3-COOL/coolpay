@@ -1,0 +1,13 @@
+import { getXApiClient } from '@/app/api/v1/x/tweets/client';
+import { fieldsParams } from '@/app/api/v1/x/tweets/schema';
+
+interface Props {
+  params: Promise<{ tweetId: string }>;
+}
+
+export async function GET(_: Request, { params }: Props) {
+  const { tweetId } = await params;
+  const client = await getXApiClient();
+  const tweet = await client.v2.singleTweet(tweetId, fieldsParams);
+  return Response.json(tweet);
+}

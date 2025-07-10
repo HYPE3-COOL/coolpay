@@ -1,0 +1,40 @@
+
+.card {
+    background-color: #000000;
+    border: 0.5px solid;
+    border-color: #222222;
+    border-radius: 16px;
+    box-shadow: 0px -1px 0px #222222;
+    height: 168px;
+    width: 360px;
+    position: relative;
+    left: 0;
+    top: 0;
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    aspect-ratio: 1/1;
+    border-radius: 8px;
+    object-fit: cover;
+    background: lightgray 50% / cover no-repeat;
+    display: block;
+    overflow: hidden;
+}
+
+.name {
+    color: #fff;
+    font-size: 22;
+    font-weight: 500;
+    line-height: 22px;
+    margin-bottom: 0;
+}
+
+.username {
+    color: #03e1ff;
+    font-size: 14;
+    font-weight: 400;
+    line-height: 15px;
+}

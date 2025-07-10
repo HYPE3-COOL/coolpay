@@ -1,0 +1,86 @@
+import { Vertex } from '@agent-graph/core';
+import { togetherai } from '@ai-sdk/togetherai';
+import { generateText } from 'ai';
+import d from 'dedent';
+import { eq } from 'drizzle-orm';
+import { db } from '@/db';
+import { PostGenerateTask, PostGenerateTaskStatus, xPostGenerateTask } from '@/db/schema/ai';
+
+const model = togetherai('deepseek-ai/DeepSeek-R1');
+
+const system = d`你是一位 web3 领域的 twitter 资深博主，你的粉丝群体主要是加密货币爱好者，你善于用简洁的文字表达
+  复杂的概念。你将会接收到一些新闻、推文信息，格式如下：
+
+  新闻例子：
+  <news>
+    <title>新闻标题</title>
+    <content>新闻内容</content>
+  </news>
+  
+  推文例子：
+  <tweet>
+    <text>推文内容</text>
+  </tweet>
+  
+  需要你用自己的语言转述并发表，推文需要符合下面的格式要求：
+  
+  - 代币符号格式：所有代币名称前加$符号，并在符号后加空格，如： $eth 基金会。
+  - 术语小写与空格：
+    - 中文版中技术术语（如defi、ai、fomo）全小写，并与前后词保持空格，例：defi 大饼缩水。
+    - 英文版保持全小写，术语如defi、ai、mc等不加空格直接连接。
+  - 结构对称：
+    - 中英文版本段落数一致，内容对应，确保核心论点同步传达。
+    - 不要输出其他字符区分中英段落，比如“中文：”、“英文：”等，英文在前，中文在后，相隔一行，直接输出内容。
+  - 结尾风格：中英文版皆以 kek 结尾，无需句号，强化币圈社群文化认同，不用表情符号。
+  - 简体中文：所有中文内容使用简体字，避免繁体字。
+  - 简洁犀利：每段不超过3-4句，用词尖锐，突出反讽与黑色幽默，例：defi 大饼缩水、whale mood swings。
+  - 信息准确：关键数据（如金额、涨跌幅）需精确，结合事件背景与社群反应。
+  - 标点符号：中文使用中文标点，英文使用英文标点。
+  
+  示例对照：
+  <example>
+  $eth foundation's defi promise shrinks: pledged 50k $eth, now 10k $eth kek~
+  
+  $eth 基金会 defi 大饼缩水：年初画饼『投5万 $eth』，现仅1万 $eth kek～
+  </example>`;
+
+const abbreviations: [string, string][] = [
+  ['good', 'gud'],
+  ['tech', 'tek'],
+  ['season', 'szn'],
+  ['with', 'w/'],
+  ['without', 'w/o'],
+  ['because', 'becoz'],
+  ['layer2', 'l2'],
+];
+
+export const generator = new Vertex({
+  id: 'generator',
+  compute: async (tasks: Readonly<PostGenerateTask[]>) => {
+    const updates: PostGenerateTask[] = [];
+    for (const task of tasks) {
+      const prompt = d`
+      <news>
+        <title>${task.title}</title>
+        <content>${task.content}</content>
+      </news>`.trim();
+
+      const { text } = await generateText({ prompt, system, model });
+      let generated = text.toLowerCase().trim();
+      generated = generated.split('</think>').at(1)?.trim() ?? generated;
+
+      for (const [from, to] of abbreviations) {
+        generated = generated.replaceAll(from, to);
+      }
+
+      const updateTime = new Date().toISOString();
+      const updated = await db
+        .update(xPostGenerateTask)
+        .set({ generated, status: PostGenerateTaskStatus.GENERATED, updateTime })
+        .where(eq(xPostGenerateTask.id, task.id))
+        .returning();
+      updates.push(...updated);
+    }
+    return updates;
+  },
+});

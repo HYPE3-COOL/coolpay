@@ -1,0 +1,53 @@
+.CreatorListItem {
+  display: flex;
+  align-items: center;
+  padding: 16px 16px;
+  /* border-radius: 8px; */
+  cursor: pointer;
+  transition: all 0.15s linear;
+}
+
+.CreatorListItem:hover {
+  background-color: #2A3838;
+}
+
+.tokenAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-size: cover;
+}
+
+.tokenDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tokenSymbol {
+  color: #FFF;
+  text-align: center;
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.tokenName {
+  color: #fff;
+  font-family: Inter;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.tokenAddress {
+  color: #627170;
+  font-family: Inter;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}

@@ -1,0 +1,14 @@
+{
+  "git": {
+    "deploymentEnabled": true
+  },
+  "crons": [
+    { "path": "/api/v1/crons/users/transactions", "schedule": "*/5 * * * *" },
+    { "path": "/api/v1/crons/mentions/platform", "schedule": "*/5 * * * *" },
+    { "path": "/api/v1/crons/actions", "schedule": "*/3 * * * *" },
+    { "path": "/api/v1/crons/mentions/replies", "schedule": "*/6 * * * *" },
+    { "path": "/api/v1/crons/stat", "schedule": "*/4 * * * *" },
+    { "path": "/api/v1/crons/manage", "schedule": "*/4 * * * *" },
+    { "path": "/api/v1/crons/daily", "schedule": "0 0 * * *" }
+  ] 
+}

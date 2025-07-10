@@ -1,0 +1,89 @@
+.tableWrapper {
+  max-height: 350px;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 18px;
+}
+
+.headerRow {
+  position: sticky;
+  top: 0;
+  background: #000708;
+  z-index: 1;
+}
+
+.thDate {
+  width: 25%;
+  color: rgba(255, 255, 255, 0.50);
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-align: left;
+  padding-right: 18px;
+}
+
+.thItem {
+  width: 25%;
+  color: rgba(255, 255, 255, 0.50);
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-align: left;
+  padding-right: 18px;
+}
+
+.thAmount {
+  width: 50%;
+  color: rgba(255, 255, 255, 0.50);
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-align: right;
+}
+
+.tdDate {
+  color: #FFF;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-align: left;
+  padding-right: 18px;
+}
+
+.tdItem {
+  color: #FFF;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-align: left;
+  padding-right: 18px;
+}
+
+.tdAmount {
+  color: #FFF;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-align: right;
+}
+
+.row {
+  background: none;
+}

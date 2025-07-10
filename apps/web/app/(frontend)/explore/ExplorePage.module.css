@@ -1,0 +1,35 @@
+.container {
+  max-width: 450px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.root {
+  width: 100%;
+}
+
+.panel {
+  margin-top: 30px;
+}
+
+.tab {
+  position: relative;
+  border: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+  /* background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6)); */
+  background-color: transparent;
+  border: none;
+  border-radius: 0px;
+  color: rgba(255, 255, 255, 0.30);
+
+  &[data-active] {
+    color: #fff;
+    /* z-index: 1;
+    background-color: var(--mantine-color-blue-filled);
+    border-color: var(--mantine-color-blue-filled);
+    color: var(--mantine-color-white);
+
+    @mixin hover {
+      background-color: var(--mantine-color-blue-filled-hover);
+    } */
+  }
+}

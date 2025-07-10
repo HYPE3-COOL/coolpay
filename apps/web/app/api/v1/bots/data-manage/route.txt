@@ -1,0 +1,30 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { eq } from 'drizzle-orm';
+
+import { db } from '@/db';
+import { user } from '@/db/schema/user';
+
+
+export async function POST(request: NextRequest) {
+  // Get all users
+  const users = await db.select().from(user);
+
+  for (const account of users) {
+    let twitterId: string | number | bigint | null = null;
+    if (account.twitter && typeof account.twitter === 'object') {
+      const tw = account.twitter as any;
+      if (tw.id) {
+        twitterId = tw.id;
+      } else if (tw.subject) {
+        twitterId = tw.subject;
+      }
+    }
+    if (twitterId) {
+      await db.update(user)
+        .set({ twitter_id: BigInt(twitterId) })
+        .where(eq(user.id, account.id));
+    }
+  }
+
+  return NextResponse.json({ status: 'success', updated: users.length });
+}

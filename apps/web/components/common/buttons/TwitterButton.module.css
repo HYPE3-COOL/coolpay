@@ -1,0 +1,20 @@
+.root {
+    border-radius: 5px;
+    border: 0.5px solid #222;
+    background: #000;
+    box-shadow: 0px -1px 0px 0px hsl(0, 0%, 13%);
+    transition: background 0.15s;
+    padding-left: 6px;
+    padding-right: 6px;
+
+    &:hover {
+        .label {
+            color: #03E1FF;
+        }
+    }
+}
+
+.label {
+    color: #fff;
+    font-size: 12px;
+}

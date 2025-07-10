@@ -1,0 +1,5 @@
+import { GraphRuntime } from '@agent-graph/core';
+
+export type Context = unknown;
+
+export type Runtime = GraphRuntime<Context>;

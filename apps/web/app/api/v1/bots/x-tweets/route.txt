@@ -1,0 +1,69 @@
+import type { NextRequest } from 'next/server';
+
+import { AxiosError } from 'axios';
+
+import { getTwitterClient } from '@/app/api/v1/x/tweets/client';
+
+// const chat_id = '-4750991433';
+// // const chat_id = '-4719591185'; // debug
+// const parse_mode = 'MarkdownV2';
+
+const userIds = [
+  '1901671652972445697',  // @HypePrivyUAT
+];
+
+// const gap = 20 * 1000; // 20 seconds
+// const interval = 6 * 60 * 1000;   // 6 minutes
+
+const gap = 20 * 1000; // 20 seconds
+const interval = 100 * 24 * 60 * 1000;   // 100 days
+
+
+export async function GET(request: NextRequest) {
+
+  // Check if the request is authorized
+  // const authHeader = request.headers.get('authorization');
+  // if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
+  //   return new Response('Unauthorized', { status: 401 });
+  // }
+
+  const client = await getTwitterClient();
+
+  try {
+    const user = await client.readWrite.v2.me()
+    const userId = user.data.id;
+
+    const tweetsPaginator = await client.v2.userTimeline(userId, {
+      exclude: ['retweets'], // optional: exclude retweets if you want
+      max_results: 100,      // max per request (up to 100)
+      expansions: ['in_reply_to_user_id'], // get reply info
+      'tweet.fields': ['in_reply_to_user_id', 'created_at', 'text'],
+    });
+    
+    // Iterate over tweets (including replies)
+    const data = []
+    for await (const tweet of tweetsPaginator) {
+      console.log(tweet);
+      const isReply = tweet.in_reply_to_user_id !== undefined;
+      console.log(isReply ? 'Reply:' : 'Tweet:', tweet.text);
+
+      data.push({
+        id: tweet.id,
+        text: tweet.text,
+        created_at: tweet.created_at,
+        isReply,
+      });
+    }
+
+    return Response.json({ success: true, data: {
+      user,
+      tweets: data,
+    }});
+  } catch (e) {
+    if (e instanceof AxiosError) {
+      console.error(e.response?.data);
+    }
+    return Response.json({ success: false, error: e });
+  }
+
+}

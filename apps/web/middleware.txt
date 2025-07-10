@@ -1,0 +1,49 @@
+import { NextRequest, NextResponse } from "next/server";
+import { PrivyClient } from "@privy-io/server-auth";
+
+export async function middleware(request: NextRequest) {
+  const response = NextResponse.next();
+
+  // // Apply CORS headers only for API routes
+  // if (request.nextUrl.pathname.startsWith("/api/")) {
+  //   const origin = request.headers.get("origin");
+
+  //   // Allow requests from localhost:3000 and requests without an Origin header (e.g., internal Next.js requests)
+  //   if (!origin || origin === "http://localhost:3000") {
+  //     response.headers.set("Access-Control-Allow-Origin", origin || "*");
+  //     response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  //     response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  //   }
+  // }
+
+  // Authentication check for protected routes
+  // if (request.nextUrl.pathname.startsWith("/") || request.nextUrl.pathname.startsWith("/protected")) {
+  const cookieAuthToken = request.cookies.get("privy-token")?.value;
+
+  if (!cookieAuthToken) {
+    console.log("No auth token found in cookies");
+    // Redirect to home page if no token is found
+    return NextResponse.redirect(new URL("/users", request.url));
+  }
+
+  const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID!;
+  const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET!;
+  const client = new PrivyClient(PRIVY_APP_ID, PRIVY_APP_SECRET);
+
+  try {
+    // Verify the token using Privy
+    console.log("Verifying auth token:", cookieAuthToken);
+    await client.verifyAuthToken(cookieAuthToken);
+  } catch (error) {
+    console.error("Authentication failed:", error);
+    // Redirect to home page if token verification fails
+    return NextResponse.redirect(new URL("/users", request.url));
+  }
+  // }
+
+  return response;
+}
+
+export const config = {
+  // matcher: ["/api/:path*", "/dashboard/:path*", "/protected/:path*"], // Apply middleware to specific routes
+};

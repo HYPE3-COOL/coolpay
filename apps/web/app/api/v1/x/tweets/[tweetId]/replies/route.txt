@@ -1,0 +1,28 @@
+import { NextRequest } from 'next/server';
+import { getXApiClient } from '@/app/api/v1/x/tweets/client';
+import { fieldsParams } from '@/app/api/v1/x/tweets/schema';
+import { hasText } from '@/utils/string';
+
+interface Props {
+  params: Promise<{ tweetId: string }>;
+}
+
+export async function GET(request: NextRequest, { params }: Props) {
+  const client = await getXApiClient();
+  const { tweetId } = await params;
+  const next = request.nextUrl.searchParams.get('next');
+  const { data: response } = await client.v2.search({
+    query: `conversation_id:${tweetId}`,
+    next_token: hasText(next) ? next : undefined,
+    max_results: parseInt(request.nextUrl.searchParams.get('limit') ?? '20'),
+    expansions: fieldsParams.expansions,
+    'tweet.fields': fieldsParams['tweet.fields'],
+    'user.fields': fieldsParams['user.fields'],
+  });
+
+  return Response.json({
+    data: response.data,
+    paging: { next: response.meta.next_token },
+    includes: response.includes,
+  });
+}

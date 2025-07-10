@@ -1,0 +1,40 @@
+import { Vertex } from '@agent-graph/core';
+import { load } from 'cheerio';
+import { eq } from 'drizzle-orm';
+import Turndown from 'turndown';
+import { db } from '@/db';
+import { PostGenerateTask, PostGenerateTaskStatus, xPostGenerateTask } from '@/db/schema/ai';
+import { crawler as c } from '@/utils/crawler';
+import { sources } from '@/x-agent/source';
+
+const td = new Turndown();
+
+export async function crawl(url: string) {
+  const source = sources.find((source) => url.startsWith(source.base));
+  if (!source) throw new Error(`source not found for url: ${url}`);
+  const html = await c[source.crawler](url);
+  const loader = load(html);
+  const title = loader(source.selector.title).first().text().trim();
+  const contentHtml = loader(source.selector.content).first().html() ?? '';
+  const content = td.turndown(contentHtml);
+  return { title, content };
+}
+
+export const crawler = new Vertex({
+  id: 'crawler',
+  compute: async (tasks: Readonly<PostGenerateTask[]>) => {
+    const updates: PostGenerateTask[] = [];
+    for (const task of tasks) {
+      const { title, content } = await crawl(task.url);
+      const updateTime = new Date().toISOString();
+      const updated = await db
+        .update(xPostGenerateTask)
+        .set({ title, content, updateTime, status: PostGenerateTaskStatus.CRAWLED })
+        .where(eq(xPostGenerateTask.id, task.id))
+        .returning();
+
+      updates.push(...updated);
+    }
+    return updates;
+  },
+});

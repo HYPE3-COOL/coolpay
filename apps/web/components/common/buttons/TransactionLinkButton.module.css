@@ -1,0 +1,14 @@
+.iconButton {
+    font-size: 9px;
+    color: #fff;
+    padding: 0 6px;
+    min-width: unset;
+    height: 22px;
+    background: none;
+}
+
+.iconButton :global(.icon-copy),
+.iconButton :global(.icon-link) {
+    font-size: 12px;
+    color: #fff;
+}

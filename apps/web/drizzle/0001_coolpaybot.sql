@@ -1,0 +1,1 @@
+ALTER TABLE "coolpaybot"."activities" ADD COLUMN "amount_after_fee" bigint;

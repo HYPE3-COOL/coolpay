@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1751468719626,
+      "tag": "0000_coolpaybot",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1751872926210,
+      "tag": "0001_coolpaybot",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751874547271,
+      "tag": "0002_coolpaybot",
+      "breakpoints": true
+    }
+  ]
+}

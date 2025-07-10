@@ -1,0 +1,54 @@
+import { CrawlerType } from '@/utils/crawler';
+
+export interface Source {
+  base: string;
+  feeds: string[];
+  selector: { title: string; content: string };
+  crawler: CrawlerType;
+  filter: (url: string) => boolean;
+}
+
+export const sources: Source[] = [
+  {
+    crawler: 'raw',
+    base: 'https://www.panewslab.com',
+    selector: { title: '.article-title', content: '.article-text' },
+    feeds: ['/', '/zh/news/index.html', '/zh/profundity/index.html'],
+    filter: (url) => url.includes('articledetails') || url.includes('sqarticledetails'),
+  },
+  {
+    crawler: 'raw',
+    base: 'https://www.odaily.news',
+    feeds: ['/', '/newsflash'],
+    selector: { title: '.post_title', content: '.post_content' },
+    filter: (url) => url.includes('/post') || url.includes('/activity'),
+  },
+  {
+    crawler: 'raw',
+    base: 'https://www.blocktempo.com',
+    selector: { title: '.jeg_post_title', content: '.content-inner' },
+    feeds: [
+      '/',
+      '/category/sneak-peek',
+      '/category/topic',
+      '/category/business',
+      '/category/technology',
+      '/category/exclusive-interview',
+    ],
+    filter: (url) => {
+      const pathname = new URL(url).pathname;
+      return !pathname.startsWith('/category') && pathname.length > 20;
+    },
+  },
+  {
+    crawler: 'raw',
+    base: 'https://zombit.info',
+    selector: { title: '.entry-title', content: '.entry-content' },
+    feeds: ['/category/feature', '/news', '/topics'],
+    filter: (url) => {
+      const pathname = new URL(url).pathname;
+      const paths = pathname.split('/').filter(Boolean).length;
+      return paths === 1 && pathname.length > 20;
+    },
+  },
+];

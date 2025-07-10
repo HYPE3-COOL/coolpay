@@ -1,0 +1,9 @@
+
+.liveIcon {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  margin-right: 6px;
+  display: flex;
+  align-items: center;
+}

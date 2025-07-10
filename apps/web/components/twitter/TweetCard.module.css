@@ -1,0 +1,53 @@
+.tweetCard {
+  border-radius: 16px;
+  border: 0.5px solid #222;
+  background: #000;
+  box-shadow: 0px -1px 0px 0px #222;
+  padding: 20px 18px;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 4px;
+}
+
+.avatar {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 24px;
+  background: lightgray 50% / cover no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.desc {
+  color: #fff;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.desc>span {
+  color: rgba(255, 255, 255, 0.50);
+  font-weight: 500;
+}
+
+.viewRequest {
+  color: #03e1ff;
+  text-align: right;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.tweetContent {
+  display: flex;
+  justify-content: center;
+  max-width: 353px;
+  margin: 0 auto;
+}

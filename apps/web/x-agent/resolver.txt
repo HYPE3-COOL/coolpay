@@ -1,0 +1,74 @@
+import { Vertex } from '@agent-graph/core';
+import { load } from 'cheerio';
+import { inArray } from 'drizzle-orm';
+import { db } from '@/db';
+import { PostGenerateTaskStatus, xPostGenerateTask, PostGenerateTask } from '@/db/schema/ai';
+import { crawler } from '@/utils/crawler';
+import { uid } from '@/utils/snowflake';
+import { sha256 } from '@/utils/string';
+import { Source, sources } from './source';
+
+export async function fetchNewUrls(source: Source) {
+  const set = new Set<string>();
+  for (const feed of source.feeds) {
+    const url = source.base + feed;
+    const html = await crawler[source.crawler](url);
+    const loader = load(html);
+    const links = loader('a')
+      .map((_, el) => loader(el).attr('href'))
+      .get()
+      .filter((href) => href.startsWith('/') || href.startsWith(source.base))
+      .map((href) => (href.startsWith('/') ? source.base + href : href))
+      .filter(source.filter);
+
+    links.forEach((link) => set.add(link));
+  }
+  return Array.from(set);
+}
+
+async function deduplicate(urls: string[]) {
+  const list = urls.map((href) => ({ href, hash: sha256(href) }));
+  const hashes = list.map(({ hash }) => hash);
+  const exists = (
+    await db
+      .select({ hash: xPostGenerateTask.hash })
+      .from(xPostGenerateTask)
+      .where(inArray(xPostGenerateTask.hash, hashes))
+  ).map(({ hash }) => hash);
+  return list.filter(({ hash }) => !exists.includes(hash)).map(({ href }) => href);
+}
+
+async function createCrawlerTasks(urls: string[]) {
+  const now = new Date().toISOString();
+  const tasks = urls.map((url) => ({
+    id: uid.next(),
+    hash: sha256(url),
+    status: PostGenerateTaskStatus.CREATED,
+    url,
+    title: '',
+    content: '',
+    generated: '',
+    updateTime: now,
+    createTime: now,
+  }));
+
+  return db
+    .insert(xPostGenerateTask)
+    .values(tasks)
+    .onConflictDoNothing({ target: xPostGenerateTask.hash })
+    .returning();
+}
+
+export const resolver = new Vertex({
+  id: 'resolver',
+  compute: async () => {
+    const list: PostGenerateTask[] = [];
+    for (const source of sources) {
+      const urls = await fetchNewUrls(source);
+      const deduplicated = await deduplicate(urls);
+      const tasks = await createCrawlerTasks(deduplicated);
+      list.push(...tasks);
+    }
+    return list;
+  },
+});

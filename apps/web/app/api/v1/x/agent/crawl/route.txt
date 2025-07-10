@@ -1,0 +1,19 @@
+import { mockGraphRuntime } from '@agent-graph/core';
+import { desc, eq } from 'drizzle-orm';
+import { db } from '@/db';
+import { PostGenerateTaskStatus, xPostGenerateTask } from '@/db/schema/ai';
+import { crawler } from '@/x-agent/crawler';
+
+export const maxDuration = 300;
+
+export async function GET() {
+  const tasks = await db
+    .select()
+    .from(xPostGenerateTask)
+    .where(eq(xPostGenerateTask.status, PostGenerateTaskStatus.CREATED))
+    .orderBy(desc(xPostGenerateTask.createTime))
+    .limit(20);
+
+  const crawled = await crawler.compute(tasks, mockGraphRuntime);
+  return Response.json({ message: `crawled ${crawled.length} tasks` });
+}

@@ -1,0 +1,48 @@
+.drawerBody {
+  padding: 0;
+  background: #000;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logoWrapper {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 64px;
+  margin-bottom: 48px;
+}
+
+.logoImg {
+  width: 60px;
+  height: 60px;
+  display: block;
+}
+
+.menuList {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.menuItem {
+  display: block;
+  width: 100vw;
+  text-align: center;
+  padding: 22px 0;
+  color: rgba(255,255,255,0.85);
+  font-size: 22px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.menuItem:hover {
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+}
